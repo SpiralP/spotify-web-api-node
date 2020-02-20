@@ -30,34 +30,15 @@ var _getParametersFromRequest = function(request) {
 
 /* Create an error object from an error returned from the Web API */
 var _getErrorObject = function(defaultMessage, err) {
-  var errorObject;
-  if (typeof err.error === 'object' && typeof err.error.message === 'string') {
-    // Web API Error format
-    errorObject = new WebApiError(err.error.message, err.error.status);
-  } else if (typeof err.error === 'string') {
-    // Authorization Error format
-    /* jshint ignore:start */
-    errorObject = new WebApiError(err.error + ': ' + err['error_description']);
-    /* jshint ignore:end */
-  } else if (typeof err === 'string') {
-    // Serialized JSON error
-    try {
-      var parsedError = JSON.parse(err);
-      errorObject = new WebApiError(
-        parsedError.error.message,
-        parsedError.error.status
-      );
-    } catch (err) {
-      // Error not JSON formatted
-    }
-  }
+  var message = err.message;
+  var statusCode = err.status;
 
-  if (!errorObject) {
-    // Unexpected format
-    errorObject = new WebApiError(defaultMessage + ': ' + JSON.stringify(err));
-  }
+  try {
+    var json = JSON.parse(message);
+    message = json.error.message;
+  } catch {}
 
-  return errorObject;
+  return new WebApiError(message, statusCode);
 };
 
 /* Make the request to the Web API */
@@ -84,9 +65,7 @@ HttpManager._makeRequest = function(method, options, uri, callback) {
 
   req.end(function(err, response) {
     if (err) {
-      var errorObject = _getErrorObject('Request error', {
-        error: err
-      });
+      var errorObject = _getErrorObject('Request error', err);
       return callback(errorObject);
     }
 

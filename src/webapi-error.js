@@ -1,11 +1,11 @@
 'use strict';
 
-function WebapiError(message, statusCode) {
-  this.name = 'WebapiError';
+function WebApiError(message, statusCode) {
+  this.name = 'WebApiError';
   this.message = message || '';
   this.statusCode = statusCode;
 }
 
-WebapiError.prototype = Error.prototype;
+WebApiError.prototype = Error.prototype;
 
-module.exports = WebapiError;
+module.exports = WebApiError;
