@@ -43,8 +43,5 @@
     "wrapper",
     "client",
     "web api"
-  ],
-  "browser": {
-    "./src/server.js": "./src/client.js"
-  }
+  ]
 }
