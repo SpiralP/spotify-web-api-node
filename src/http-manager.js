@@ -35,7 +35,19 @@ var _getErrorObject = function(defaultMessage, err) {
 
   try {
     var json = JSON.parse(message);
-    message = json.error.message;
+    if (
+      typeof json.error === 'object' &&
+      typeof json.error.message === 'string'
+    ) {
+      message = json.error.message;
+    } else if (
+      typeof json.error === 'string' &&
+      typeof json.error_description === 'string'
+    ) {
+      message = json.error + ': ' + json.error_description;
+    } else {
+      throw new Error('unimplemented Spotify api error response');
+    }
   } catch {}
 
   return new WebApiError(message, statusCode);
